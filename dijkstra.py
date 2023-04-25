@@ -38,30 +38,20 @@ def dijkstra(V, s):
     for e in s.outgoing:
         e.head.dist = s.dist + e.length
         heapInsert(heap, e)
-    #print('initialized s, printing heap')
-    #printHeap(heap)
     # repeat until X includes all vertices
     while heap:
         w = heapExtract(heap).head
-        #print('after extraction in main loop, printing heap')
-        #printHeap(heap)
         X.add(w)
         for e in w.outgoing:
-            #print('e:', e.tail.name, '=>', e.head.name, 'e index:', e.heapIndex)
             v = e.head
             if v not in X and (w.dist + e.length) < v.dist: # got better path to v thru w
                 # delete old edge to v from heap (if it exists)
                 for f in v.incoming:
-                    #print('f:', f.tail.name, '=>', f.head.name, 'f index:', f.heapIndex)
                     if f.heapIndex != None:
-                        #print('heapIndex:', f.heapIndex)
-                        #printHeap(heap)
                         heapDelete(heap, f.heapIndex)
                 # insert the better edge into the heap and update v's dist
                 heapInsert(heap, e)
                 v.dist = w.dist + e.length
-            #print('end of for loop, printing heap')
-            #printHeap(heap)
     return
 
 def sink(heap, p):
@@ -101,7 +91,7 @@ def heapDelete(heap, i):
     heapSwap(heap, i, len(heap)-1)
     deleted = heap.pop()
     deleted.heapIndex = None
-    if not heap:
+    if len(heap) < 2 or i >= len(heap):
         return
     p = max((i-1) // 2, 0)
     c1 = 2*i + 1
@@ -117,7 +107,7 @@ def heapExtract(heap):
     heapSwap(heap, 0, len(heap)-1)
     extracted = heap.pop()
     extracted.heapIndex = None
-    if not heap:
+    if len(heap) < 2:
         return extracted
     sink(heap, 0)
     return extracted
@@ -154,11 +144,12 @@ def printDists(V):
         print('Node', v.name, '... Dist from s:', v.dist)
     return
 
-filename = "small_input.txt"
+filename = "dijkstraData.txt"
 V = createGraph(filename)
 # printGraph(V)
 dijkstra(V, V[0])
-printDists(V)
+#printDists(V)
+printDists([V[i-1] for i in [7,37,59,82,99,115,133,165,188,197]])
 
 
 # test = [Vertex(1), Vertex(2,423), Vertex(3,233), Vertex(4, 93), Vertex(5, 2)]
